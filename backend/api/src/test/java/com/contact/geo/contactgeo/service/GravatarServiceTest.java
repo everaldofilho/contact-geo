@@ -51,7 +51,7 @@ public class GravatarServiceTest {
     public void shoudReturnExceptionEmailNullOrBlankTest() {
         GravatarService gravatarService = new GravatarService();
 
-        assertThrows(NullPointerException.class, () -> gravatarService.getImageURL(null));
+        assertThrows(IllegalArgumentException.class, () -> gravatarService.getImageURL(null));
         assertThrows(IllegalArgumentException.class, () -> gravatarService.getImageURL(""));
     }
 

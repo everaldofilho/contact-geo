@@ -9,7 +9,7 @@ public class GravatarService {
     private final String URL_BASE = "https://www.gravatar.com/avatar/";
 
     public String getImageURL(String email) throws Exception {
-        if (email.isEmpty()) {
+        if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("Email em branco");
         }
 
