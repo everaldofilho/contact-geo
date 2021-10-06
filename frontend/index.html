@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Maps</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+
+</head>
+
+<body>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCnKwaYJYFpy68neh3hqH9CEkyHvNAOHI&v=weekly"></script>
+    <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#" v-on:click.prevent="router='home'; toggle=false">Contact Geo</a>
+                <button class="navbar-toggler" v-on:click.prevent="toggle=!toggle" type="button"
+                    data-bs-toggle="collapse" aria-controls="navbarText" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" v-bind:class="{ show: toggle}">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link " v-bind:class="{ active: router=='home'}" href="#"
+                                v-on:click.prevent="router='home'; toggle=false">Mapa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" v-bind:class="{ active: router=='createContact'}" href="#"
+                                v-on:click.prevent="router='createContact'; toggle=false">Novo
+                                Contato</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="map" v-show="router =='home'"></div>
+        <div v-show="router =='createContact'">
+            <div class="container mt-3">
+                <form v-on:submit.prevent="handleSubmit" action="">
+                    <h1 class="text-center">Novo Contato</h1>
+                    <p class="text-center">Cadastre seu contato e o encontre de forma mais rápida.</p>
+                    <div class="alert alert-success" role="alert" v-if="erros.length == 0 && success == true">
+                        Cadastrado com sucesso! <a href="#" v-on:click.prevent="router='home'">ver no map</a>.
+                    </div>
+                    <div class="alert alert-danger" role="alert" v-if="erros.length > 0">
+                        <ul>
+                            <li v-for="(erro, index) in erros" :key="index">{{erro}}</li>
+                        </ul>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputName" class="form-label">Nome</label>
+                        <input type="text" v-model="contact.name" class="form-control" minlength="4"
+                            id="exampleInputName" aria-describedby="nameHelp" required>
+                        <div id="nameHelp" class="form-text">Nome completo, exemplo: João da silva sauro</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">E-mail</label>
+                        <input type="email" v-model="contact.email" class="form-control" minlength="5"
+                            id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                        <div id="emailHelp" class="form-text">Informe um email valido</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">CEP</label>
+                        <input type="number" v-model="contact.cep" maxlength="8" minlength="8" class="form-control"
+                            id="exampleInputPassword1" aria-describedby="cepHelp" required>
+                        <div id="cepHelp" class="form-text">Informe um CEP valido, sem traço(-).</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary w-auto">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #header {
+            height: 50px;
+        }
+
+        #header .info {
+            float: right;
+            line-height: 50px;
+            padding-right: 20px;
+        }
+
+        #map {
+            height: calc(100vh - 50px);
+        }
+
+        .customMarker {
+            position: absolute;
+            cursor: pointer;
+            background: #424242;
+            width: 55px;
+            height: 55px;
+            /* -height + arrow */
+            margin-left: -28px;
+            margin-top: -60px;
+            border-radius: 50%;
+            padding: 0px;
+        }
+
+        .customMarker:after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 18px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #424242 transparent;
+            display: block;
+            width: 0;
+        }
+
+        .customMarker img {
+            width: 50px;
+            height: 50px;
+            margin: 3px;
+            border-radius: 50%;
+        }
+    </style>
+    <script>
+
+        function CustomMarker(latlng, map, imageSrc) {
+            this.latlng_ = latlng;
+            this.imageSrc = imageSrc;
+            // Once the LatLng and text are set, add the overlay to the map.  This will
+            // trigger a call to panes_changed which should in turn call draw.
+            this.setMap(map);
+        }
+
+        CustomMarker.prototype = new google.maps.OverlayView();
+
+        CustomMarker.prototype.draw = function () {
+            // Check if the div has been created.
+            var div = this.div_;
+            if (!div) {
+                // Create a overlay text DIV
+                div = this.div_ = document.createElement('div');
+                // Create the DIV representing our CustomMarker
+                div.className = "customMarker"
+
+
+                var img = document.createElement("img");
+                img.src = this.imageSrc;
+                div.appendChild(img);
+                var me = this;
+                google.maps.event.addDomListener(div, "click", function (event) {
+                    google.maps.event.trigger(me, "click");
+                });
+
+                // Then add the overlay to the DOM
+                var panes = this.getPanes();
+                panes.overlayImage.appendChild(div);
+            }
+
+            // Position the overlay 
+            var point = this.getProjection().fromLatLngToDivPixel(this.latlng_);
+            if (point) {
+                div.style.left = point.x + 'px';
+                div.style.top = point.y + 'px';
+            }
+        };
+
+        CustomMarker.prototype.remove = function () {
+            if (this.div_) {
+                this.div_.parentNode.removeChild(this.div_);
+                this.div_ = null;
+            }
+        };
+
+        CustomMarker.prototype.getPosition = function () {
+            return this.latlng_;
+        };
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                router: 'home',
+                erros: [],
+                success: false,
+                toggle: false,
+                contact: {
+                    name: null,
+                    email: null,
+                    cep: null
+                },
+                center: { lat: -25.363, lng: 131.044 },
+                map: null,
+                points: [
+                    {
+                        position: { lat: -23.57092, lng: -46.3570992 },
+                        name: "",
+                        image: "https://avatars.githubusercontent.com/u/30817430?v=4"
+                    },
+                    {
+                        position: { lat: -23.57292, lng: -46.3590992 },
+                        name: "",
+                        image: "https://avatars.githubusercontent.com/u/30817430?v=4"
+                    }
+                ],
+                message: 'Hello Vue!'
+            },
+            mounted() {
+                this.getLocation();
+                this.loadContacts();
+            },
+            watch: {
+                center: function () {
+                    this.initMap();
+                    this.createPoints();
+                },
+                points: function () {
+                    this.createPoints();
+                }
+            },
+            methods: {
+                initMap() {
+                    this.map = new google.maps.Map(document.getElementById("map"), {
+                        zoom: 13,
+                        center: this.center,
+                        maxZoom: 15,
+                        minZoom: 10,
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                        fullscreenControl: false,
+                        zoomControl: false
+                    });
+                    google.maps.event.addListener(this.map, "dragend", function () {
+                        var bounds = this.getBounds();
+                        console.log(bounds.getCurrentPosition);
+                        // alert("test");
+                    });
+                },
+                createPoint(position, title, url) {
+                    var icon = {
+                        url: url, // url
+                        scaledSize: new google.maps.Size(50, 50), // scaled size
+                        origin: new google.maps.Point(0, 0), // origin
+                        anchor: new google.maps.Point(0, 0), // anchor
+                        shape: { coords: [17, 17, 18], type: 'circle' },
+                        optimized: false,
+                        title: 'spot'
+                    };
+                    return new CustomMarker(
+                        new google.maps.LatLng(position.lat, position.lng),
+                        this.map,
+                        url
+                    );
+                },
+                createPoints() {
+                    for (let indexItem = 0; indexItem < this.points.length; indexItem++) {
+                        const element = this.points[indexItem];
+                        if (typeof element.maker == "undefined") {
+                            this.points[indexItem].maker = this.createPoint(element.position, element.name, element.image);
+                        } else {
+                            this.points[indexItem].maker.setMap(this.map);
+                        }
+                    }
+                },
+                clearPoints(points) {
+                    for (let indexItem = 0; indexItem < points.length; indexItem++) {
+                        const element = points[indexItem];
+                        if (typeof element.maker !== "undefined") {
+                            points[indexItem].maker.setMap(null);
+                        }
+                    }
+                },
+                getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(this.showPosition);
+                    } else {
+                        x.innerHTML = "Geolocation is not supported by this browser.";
+                    }
+                },
+                showPosition(position) {
+                    this.center = { lat: position.coords.latitude, lng: position.coords.longitude };
+                },
+                setPoints(points) {
+                    this.clearPoints(this.points);
+
+                    this.points = points;
+
+
+                },
+                loadContacts() {
+                    axios({
+                        method: 'get',
+                        url: 'http://localhost:8080/api/contact'
+                    }).then((response) => {
+                        this.setPoints(response.data);
+                    },
+                    (error) => {
+                        this.erros = [error];
+                    });
+                },
+                handleSubmit() {
+                    axios({
+                        method: 'post',
+                        url: 'http://localhost:8080/api/contact',
+                        data: this.contact
+                    }).then(() => {
+                        this.success = true;
+                        this.erros = [];
+                    },
+                    (error) => {
+                        this.erros = [error];
+                    });
+                }
+            },
+        })
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
