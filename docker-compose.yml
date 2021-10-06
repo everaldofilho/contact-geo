@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  contact-geto-api:
+    container_name: contact-geto-api
+    build:
+      context: ./backend/api
+    networks:
+      - app-geo-network
+    ports:
+      - "8080:8080"
+
+  worker-contact-geto:
+    container_name: worker-contact-geto
+    build:
+      context: ./backend/api
+    networks:
+      - app-geo-network
+
+networks:
+  app-geo-network:
+    driver: bridge
