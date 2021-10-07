@@ -30,5 +30,5 @@ public class Contacts {
     private String photo;
     private String address;
     private Boolean status;
-    private String cep;
+    private String zipcode;
 }
