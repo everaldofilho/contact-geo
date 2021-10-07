@@ -26,6 +26,10 @@ services:
     image: mongo:5.0.3
     volumes:
       - ./.database/mongodb:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - app-geo-network
 
 networks:
   app-geo-network:
