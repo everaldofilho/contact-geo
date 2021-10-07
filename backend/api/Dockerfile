@@ -8,7 +8,7 @@ COPY settings.gradle .
 
 COPY src src
 
-RUN gradle build --no-daemon --stacktrace
+RUN gradle build --no-daemon
 
 FROM adoptopenjdk:11-jre-hotspot-focal
 
