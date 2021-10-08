@@ -1,19 +1,33 @@
 version: '3'
 
 services:
-  contact-geto-api:
-    container_name: contact-geto-api
+  contact-geo-api:
+    container_name: contact-geo-api
     build:
       context: ./backend/api
     networks:
       - app-geo-network
     ports:
       - "8080:8080"
+    depends_on:
+      - mongo-contact-geo
 
-  worker-contact-geto:
-    container_name: worker-contact-geto
+  worker-contact-geo:
+    container_name: worker-contact-geo
     build:
       context: ./backend/api
+    networks:
+      - app-geo-network
+    depends_on:
+      - mongo-contact-geo
+
+  mongo-contact-geo:
+    container_name: mongo-contact-geo
+    image: mongo:5.0.3
+    volumes:
+      - ./.database/mongodb:/data/db
+    ports:
+      - "27017:27017"
     networks:
       - app-geo-network
 
