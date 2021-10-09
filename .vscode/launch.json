@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ContactGeoApplication<contact-geo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.contact.geo.contactgeo.ContactGeoApplication",
+            "projectName": "contact-geo",
+            "args": ""
+        }
+    ]
+}
