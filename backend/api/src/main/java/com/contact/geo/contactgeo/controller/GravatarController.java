@@ -12,8 +12,7 @@ public class GravatarController {
     public GravatarService service;
 
     @GetMapping("{email}")
-    @ResponseBody
     public String emailToProfile(@PathVariable("email") String email) throws Exception {
-        return service.getImageURL(email).concat("str");
+        return service.getImageURL(email);
     }
 }

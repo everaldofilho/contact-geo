@@ -2,14 +2,12 @@ package com.contact.geo.contactgeo.client;
 
 import com.contact.geo.contactgeo.dto.maps.GoogleMapsResponseDTO;
 import com.contact.geo.contactgeo.exception.GoogleMapsException;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-@Setter
 public class GoogleMapsClient {
 
     @Value("${app.maps.uri}")
@@ -18,6 +16,10 @@ public class GoogleMapsClient {
     private String key;
 
     private final WebClient webClient;
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
     public GoogleMapsClient() {
         this.webClient = WebClient.create();
