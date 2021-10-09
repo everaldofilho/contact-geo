@@ -12,7 +12,7 @@ RUN gradle build --no-daemon --stacktrace
 
 FROM adoptopenjdk:11-jre-hotspot-focal
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app.jar
+COPY --from=build /home/gradle/src/build/libs/*SNAPSHOT.jar /app.jar
 
 COPY docker-entrypoint.sh /
 
