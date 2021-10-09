@@ -1,0 +1,88 @@
+{
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "Rua Angela Giusti Zampese",
+          "short_name": "R. Angela Giusti Zampese",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Ferraz de Vasconcelos",
+          "short_name": "Ferraz de Vasconcelos",
+          "types": [
+            "administrative_area_level_4",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Ferraz de Vasconcelos",
+          "short_name": "Ferraz de Vasconcelos",
+          "types": [
+            "administrative_area_level_2",
+            "political"
+          ]
+        },
+        {
+          "long_name": "São Paulo",
+          "short_name": "SP",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Brazil",
+          "short_name": "BR",
+          "types": [
+            "country",
+            "political"
+          ]
+        },
+        {
+          "long_name": "08504",
+          "short_name": "08504",
+          "types": [
+            "postal_code",
+            "postal_code_prefix"
+          ]
+        }
+      ],
+      "formatted_address": "R. Angela Giusti Zampese - Ferraz de Vasconcelos, SP, 08504, Brazil",
+      "geometry": {
+        "bounds": {
+          "northeast": {
+            "lat": -23.5587855,
+            "lng": -46.3561709
+          },
+          "southwest": {
+            "lat": -23.5641824,
+            "lng": -46.3588698
+          }
+        },
+        "location": {
+          "lat": -23.5613807,
+          "lng": -46.3577364
+        },
+        "location_type": "GEOMETRIC_CENTER",
+        "viewport": {
+          "northeast": {
+            "lat": -23.5587855,
+            "lng": -46.3561709
+          },
+          "southwest": {
+            "lat": -23.5641824,
+            "lng": -46.3588698
+          }
+        }
+      },
+      "place_id": "ChIJY7708656zpQRuuGuwqbF7YA",
+      "types": [
+        "route"
+      ]
+    }
+  ],
+  "status": "OK"
+}
