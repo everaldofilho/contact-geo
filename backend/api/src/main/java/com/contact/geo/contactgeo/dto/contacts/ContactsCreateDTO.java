@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContactsDTO {
+public class ContactsCreateDTO {
 
     @NotEmpty(message = "the email cannot be null")
     private String email;
@@ -22,9 +22,4 @@ public class ContactsDTO {
     @NotEmpty(message = "the zipcode cannot be null")
     private String zipcode;
 
-    private String photo;
-    private String address;
-    private Boolean status;
-    private Double latitude;
-    private Double longitude;
 }

@@ -1,5 +1,6 @@
 package com.contact.geo.contactgeo.document;
 
+import com.contact.geo.contactgeo.dto.contacts.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class Contacts {
     private String email;
 
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private GeoJsonPoint geo;
+    private GeoJsonPoint location;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String name;
