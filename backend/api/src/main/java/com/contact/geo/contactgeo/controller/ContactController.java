@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/contacts")
@@ -24,8 +25,14 @@ public class ContactController {
     }
 
     @GetMapping
-    public Page<Contacts> nearby() throws Exception {
-        Page<Contacts> contactsDTO = contactService.nearby( -46.3753045, -23.5576921, 500000D,0, 10);
-        return contactsDTO;
+    public Page<Contacts> nearby(
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude,
+            @RequestParam("radius") Double radius,
+            @RequestParam("page") int page,
+            @RequestParam("pageSize") int pageSize
+        ) throws Exception {
+        Page<Contacts> results = contactService.getNear(longitude, latitude, radius, page, pageSize);
+        return results;
     }
 }

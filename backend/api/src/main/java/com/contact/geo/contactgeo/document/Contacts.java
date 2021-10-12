@@ -12,12 +12,13 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collation = "contacts")
+@Document(collection = "contacts")
 public class Contacts {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Id
@@ -37,4 +38,7 @@ public class Contacts {
     private String address;
     private Boolean status;
     private String zipcode;
+
+    private Double distance;
+    private int total;
 }
