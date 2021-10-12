@@ -32,9 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ContactService {
 
-    @Autowired
-    private MongoOperations mongoOperations;
-
     private static final Double RADIUS = 5.0;
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
