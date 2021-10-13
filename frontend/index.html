@@ -193,13 +193,14 @@
                     pageSize: 10,
                     radius: 10,
                 },
-                center: { lat: 0, lng: 0 },
+                center: { lat: -23.5430752, lng: -46.634665},
                 map: null,
                 points: [
                 ],
                 message: 'Hello Vue!'
             },
             mounted() {
+                this.initMap();
                 this.getLocation();
                 this.loadContacts();
             },

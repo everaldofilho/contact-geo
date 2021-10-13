@@ -36,10 +36,13 @@ services:
     container_name: contact-geo-front
     build:
       context: ./frontend
+      args:
+        BACKEND_PORT: 8080
     networks:
       - app-geo-network
     ports:
       - "8089:80"
+      
     depends_on:
       - contact-geo-api
 
