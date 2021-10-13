@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 public class GravatarController {
 
     @Autowired
-    public GravatarService service;
+    public GravatarService gravatarService;
 
     @GetMapping("{email}")
     public String emailToProfile(@PathVariable("email") String email) throws Exception {
-        return service.getImageURL(email);
+        return gravatarService.getImageURL(email);
     }
 }

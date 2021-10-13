@@ -16,32 +16,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest
-public class GravatarControllerTest {
+public class ContactControllerTest {
 
-    String RETURN_EXPECTED = "https://www.gravatar.com/avatar/23463b99b62a72f26ed677cc556c44e8?d=monsterid";
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockBean
-    GravatarService gravatarService;
-    @MockBean
-    ContactService service;
+    ContactService contactService;
 
-    @Test
-    @DisplayName("Deve retorna a url do gravatar")
-    void getProfileURLTest() throws Exception {
-        String email = "example@example.com";
-        Mockito.when(gravatarService.getImageURL(email)).thenReturn(RETURN_EXPECTED);
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/api/gravatar/".concat(email));
 
-        mockMvc.perform(request.contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(RETURN_EXPECTED));
-    }
 }

@@ -15,7 +15,7 @@ public class GravatarService {
 
         String emailClear = cleanEmail(email);
         String emailEncode = encodeMD5(emailClear);
-        return URL_BASE.concat(emailEncode);
+        return URL_BASE.concat(emailEncode).concat("?d=monsterid");
     }
 
     private String cleanEmail(String email) {

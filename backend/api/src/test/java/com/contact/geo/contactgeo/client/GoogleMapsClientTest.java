@@ -54,8 +54,8 @@ public class GoogleMapsClientTest extends AbstractClientTest{
         GoogleMapsResponseDTO geo = googleMapsClient.getGeo(address);
         Location locationResponse = geo.getResults().get(0).getGeometry().getLocation();
 
-        Assertions.assertThat(locationResponse.getLat()).isEqualTo(-23.56138f);
-        Assertions.assertThat(locationResponse.getLng()).isEqualTo(-46.357735f);
+        Assertions.assertThat(locationResponse.getLat()).isEqualTo(-23.5613807);
+        Assertions.assertThat(locationResponse.getLng()).isEqualTo(-46.3577364);
     }
 
     @Test

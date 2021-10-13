@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class GravatarServiceTest {
 
-    private static String URL_EXPECTED = "https://www.gravatar.com/avatar/64505d93b19ff2f96af666d73c2bbede";
+    private static String URL_EXPECTED = "https://www.gravatar.com/avatar/64505d93b19ff2f96af666d73c2bbede?d=monsterid";
     private GravatarService gravatarService;
 
     @BeforeEach

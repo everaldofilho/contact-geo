@@ -11,6 +11,7 @@ services:
       - "8080:8080"
     depends_on:
       - mongo-contact-geo
+    env_file: ./backend/api/_env
 
   worker-contact-geo:
     container_name: worker-contact-geo
@@ -30,6 +31,17 @@ services:
       - "27017:27017"
     networks:
       - app-geo-network
+  
+  contact-geo-front:
+    container_name: contact-geo-front
+    build:
+      context: ./frontend
+    networks:
+      - app-geo-network
+    ports:
+      - "8089:80"
+    depends_on:
+      - contact-geo-api
 
 networks:
   app-geo-network:
