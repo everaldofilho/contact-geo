@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 public class GravatarControllerTest {
 
-    String RETURN_EXPECTED = "https://www.gravatar.com/avatar/23463b99b62a72f26ed677cc556c44e8";
+    String RETURN_EXPECTED = "https://www.gravatar.com/avatar/23463b99b62a72f26ed677cc556c44e8?d=monsterid";
     @Autowired
     private MockMvc mockMvc;
 

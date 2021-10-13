@@ -1,7 +1,37 @@
 # Contatos por GEO
 
+A ideia desse projeto era colocar em pratica tudo que foi estudado nos cursos meio que um desafio para consolidar o aprendizado.
 
-## Estrutura de Arquivos dentro do framework
+## Setup
+
+1. Copie o `/backend/api/.env.example` para `/backend/api/_env` e substitua as configurações necessárias.
+
+2. Tenha docker + docker-compose instalado
+`
+docker-compose up --build -d
+`
+
+### Serviços
+
+- http://localhost:8089/ (frontend)
+![](frontend.png)
+
+
+- http://localhost:8080/api/doc (backend)
+![](backend.png)
+
+- localhost:27017 (mongodb)
+
+
+## Backend
+
+### Integração
+
+- Google Maps API (Para pegar a geo)
+- Busca CEP (para completar o endereço)
+- Gravatar (para buscar uma imagem de perfil com base no email)
+
+### Estrutura de Arquivos dentro do framework
 
 - controller
 - resource
@@ -11,56 +41,9 @@
 - service
 - exception
 
-## Recursos/Ferramentas
+### Recursos/Ferramentas
 
 - MongoDB
 - SpringBoot
 - Kafka (V2)
 - Redis (V2)
-
-
-## Rotas iniciais
-
-
-POST /api/contacts
-````json
-{
-    "name": "basss",
-    "email": "exemplo@gmail.com",
-    "cep": "1093313-212"
-}
-````
-
-GET /api/contacts
-````json
-[
-    {
-        "name": "basss",
-        "foto": "https://www.gravatar.com/avatar/{$hash}",
-        "endereco": "rua azul n 32",
-        "status": "processing|processed|invalid",
-        "geo": {
-            "lat": "-131.43113",
-            "long": "-131.43113"
-        },
-        "email": "exemplo@gmail.com",
-        "cep": "1093313-212"
-    }
-]
-````
-
-GET /api/contacts/{id} (Opcional)
-````json
-{
-    "name": "basss",
-    "foto": "https://www.gravatar.com/avatar/{$hash}",
-    "endereco": "rua azul n 32",
-    "status": "processing|processed|invalid",
-    "geo": {
-        "lat": "-131.43113",
-        "long": "-131.43113"
-    },
-    "email": "exemplo@gmail.com",
-    "cep": "1093313-212"
-}
-````

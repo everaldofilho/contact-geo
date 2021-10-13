@@ -7,6 +7,7 @@ import com.contact.geo.contactgeo.dto.contacts.ContactsCreateDTO;
 import com.contact.geo.contactgeo.dto.contacts.ContactsDTO;
 import com.contact.geo.contactgeo.dto.contacts.Status;
 import com.contact.geo.contactgeo.dto.maps.Location;
+import com.contact.geo.contactgeo.dto.searchzipcode.ZipcodeResponseDTO;
 import com.contact.geo.contactgeo.repository.ContactsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,14 +37,15 @@ public class ContactService {
                 .photo(gravatarService.getImageURL(createDTO.getEmail()))
                 .build();
 
-        String address = zipcodeClient.getZipcode(createDTO.getZipcode()).getPublicPlace();
+        ZipcodeResponseDTO zipcodeResponse = zipcodeClient.getZipcode(createDTO.getZipcode());
+        String address = String.format("%s, %s - %s", zipcodeResponse.getPublicPlace(), zipcodeResponse.getDistrict(), zipcodeResponse.getUf());
         contactsDTO.setAddress(address);
 
         Location location = googleMapsClient.getGeo(address).getResults().get(0).getGeometry().getLocation();
         contactsDTO.setLatitude(location.getLat());
         contactsDTO.setLongitude(location.getLng());
 
-        GeoJsonPoint geoJsonPoint = new GeoJsonPoint(contactsDTO.getLongitude(), contactsDTO.getLatitude());
+        GeoJsonPoint geoJsonPoint = new GeoJsonPoint(contactsDTO.getLatitude(), contactsDTO.getLongitude());
 
         contactsDTO.setStatus(Status.OK.getValue());
 
@@ -66,7 +68,7 @@ public class ContactService {
         radius = radius != null ? radius : RADIUS;
         pageSize = pageSize != null ? pageSize : DEFAULT_PAGE_SIZE;
         Pageable pageable = PageRequest.of(page, pageSize);
-        var coordinates = new GeoJsonPoint(longitude, latitude);
+        var coordinates = new GeoJsonPoint(latitude, longitude);
         Page<Contacts> result = this.repository.findNearbyContacts(coordinates, radius, pageable);
 
         return result;

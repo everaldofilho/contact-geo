@@ -41,16 +41,54 @@
                 </div>
             </div>
         </nav>
-        <div id="map" v-show="router =='home'"></div>
+        <div v-show="router =='home'">
+            <div class="row">
+                <div class="col-4 panel-left">
+                    <form>
+
+                        Registros por vês: {{config.pageSize}}
+                        <input type="range" v-model="config.pageSize" class="form-range">
+
+                        Raio: {{config.radius}}km
+                        <input type="range" v-model="config.radius" class="form-range">
+                    </form>
+                    <div class="painel-left-itens">
+
+                        <table class="table table-responsive">
+                            <tr v-for="(item, index) in points" :key="index" v-on:click="handleClick(item)">
+                                <td width="60px">
+                                    <img v-bind:src="item.photo" width="60px">
+                                </td>
+
+                                <td>
+                                    <h5>{{item.name}} ({{item.distance.toFixed(1)}}km distancia)</h5>
+                                    <p>
+                                        E-mail: {{item.email}} <br>
+                                        {{item.address}}</p>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="col">
+                    <div id="map"></div>
+                </div>
+
+            </div>
+        </div>
         <div v-show="router =='createContact'">
             <div class="container mt-3">
                 <form v-on:submit.prevent="handleSubmit" action="">
                     <h1 class="text-center">Novo Contato</h1>
                     <p class="text-center">Cadastre seu contato e o encontre de forma mais rápida.</p>
-                    <div class="alert alert-success" role="alert" v-if="erros.length == 0 && success == true">
-                        Cadastrado com sucesso! <a href="#" v-on:click.prevent="router='home'">ver no map</a>.
+                    <div class="alert alert-success" role="alert" v-if="erros.length == 0 && success == true"
+                        onclick="success = null">
+                        Cadastrado com sucesso! <a href="#" v-on:click.prevent="router='home';  success = null">ver no
+                            map</a>.
                     </div>
-                    <div class="alert alert-danger" role="alert" v-if="erros.length > 0">
+                    <div class="alert alert-danger" role="alert" v-if="erros.length > 0"
+                        onclick="success = null;erros = [];">
                         <ul>
                             <li v-for="(erro, index) in erros" :key="index">{{erro}}</li>
                         </ul>
@@ -74,68 +112,14 @@
                         <div id="cepHelp" class="form-text">Informe um CEP valido, sem traço(-).</div>
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary w-auto">Cadastrar</button>
+                        <button type="submit" class="btn btn-primary w-auto" :disabled="disabled">{{sending ?
+                            "Enviando...":"Cadastrar"}}</button>
                     </div>
                 </form>
             </div>
 
         </div>
     </div>
-
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        #header {
-            height: 50px;
-        }
-
-        #header .info {
-            float: right;
-            line-height: 50px;
-            padding-right: 20px;
-        }
-
-        #map {
-            height: calc(100vh - 50px);
-        }
-
-        .customMarker {
-            position: absolute;
-            cursor: pointer;
-            background: #424242;
-            width: 55px;
-            height: 55px;
-            /* -height + arrow */
-            margin-left: -28px;
-            margin-top: -60px;
-            border-radius: 50%;
-            padding: 0px;
-        }
-
-        .customMarker:after {
-            content: "";
-            position: absolute;
-            bottom: -8px;
-            left: 18px;
-            border-width: 10px 10px 0;
-            border-style: solid;
-            border-color: #424242 transparent;
-            display: block;
-            width: 0;
-        }
-
-        .customMarker img {
-            width: 50px;
-            height: 50px;
-            margin: 3px;
-            border-radius: 50%;
-        }
-    </style>
     <script>
 
         function CustomMarker(latlng, map, imageSrc) {
@@ -197,24 +181,21 @@
                 erros: [],
                 success: false,
                 toggle: false,
+                disabled: false,
+                sending: false,
                 contact: {
                     name: null,
                     email: null,
                     cep: null
                 },
-                center: { lat: -25.363, lng: 131.044 },
+                config: {
+                    page: 0,
+                    pageSize: 10,
+                    radius: 10,
+                },
+                center: { lat: 0, lng: 0 },
                 map: null,
                 points: [
-                    {
-                        position: { lat: -23.57092, lng: -46.3570992 },
-                        name: "",
-                        image: "https://avatars.githubusercontent.com/u/30817430?v=4"
-                    },
-                    {
-                        position: { lat: -23.57292, lng: -46.3590992 },
-                        name: "",
-                        image: "https://avatars.githubusercontent.com/u/30817430?v=4"
-                    }
                 ],
                 message: 'Hello Vue!'
             },
@@ -224,30 +205,38 @@
             },
             watch: {
                 center: function () {
-                    this.initMap();
-                    this.createPoints();
+                    this.loadContacts();
                 },
                 points: function () {
                     this.createPoints();
+                },
+                'config.radius': function () {
+                    this.loadContacts();
+                },
+                'config.pageSize': function () {
+                    this.loadContacts();
                 }
             },
             methods: {
                 initMap() {
                     this.map = new google.maps.Map(document.getElementById("map"), {
-                        zoom: 13,
+                        zoom: 15,
                         center: this.center,
                         maxZoom: 15,
                         minZoom: 10,
                         streetViewControl: false,
                         mapTypeControl: false,
                         fullscreenControl: false,
-                        zoomControl: false
+                        zoomControl: true
                     });
-                    google.maps.event.addListener(this.map, "dragend", function () {
-                        var bounds = this.getBounds();
-                        console.log(bounds.getCurrentPosition);
-                        // alert("test");
+                    google.maps.event.addListener(this.map, "dragend", () => {
+                        var bounds = this.map.getBounds();
+                        this.center = { lat: bounds.getCenter().lat(), lng: bounds.getCenter().lng() };
                     });
+                },
+                handleClick(item) {
+                    this.map.setCenter({ lat: item.location.x, lng: item.location.y });
+                    console.log(item);
                 },
                 createPoint(position, title, url) {
                     var icon = {
@@ -260,7 +249,7 @@
                         title: 'spot'
                     };
                     return new CustomMarker(
-                        new google.maps.LatLng(position.lat, position.lng),
+                        new google.maps.LatLng(position.x, position.y),
                         this.map,
                         url
                     );
@@ -269,7 +258,7 @@
                     for (let indexItem = 0; indexItem < this.points.length; indexItem++) {
                         const element = this.points[indexItem];
                         if (typeof element.maker == "undefined") {
-                            this.points[indexItem].maker = this.createPoint(element.position, element.name, element.image);
+                            this.points[indexItem].maker = this.createPoint(element.location, element.name, element.photo);
                         } else {
                             this.points[indexItem].maker.setMap(this.map);
                         }
@@ -292,6 +281,7 @@
                 },
                 showPosition(position) {
                     this.center = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    this.initMap();
                 },
                 setPoints(points) {
                     this.clearPoints(this.points);
@@ -303,26 +293,48 @@
                 loadContacts() {
                     axios({
                         method: 'get',
-                        url: 'http://localhost:8080/api/contact'
+                        url: `http://localhost:8080/api/contacts`,
+                        params: {
+                            page: this.config.page,
+                            pageSize: this.config.pageSize,
+                            radius: this.config.radius,
+                            latitude: this.center.lat,
+                            longitude: this.center.lng
+                        }
                     }).then((response) => {
-                        this.setPoints(response.data);
+                        this.setPoints(response.data.content);
                     },
-                    (error) => {
-                        this.erros = [error];
-                    });
+                        (error) => {
+                            this.erros = [error];
+                        });
                 },
                 handleSubmit() {
+                    this.sending = true;
+                    this.disabled = true;
+                    this.erros = [];
+                    this.success = null;
+                    
                     axios({
                         method: 'post',
-                        url: 'http://localhost:8080/api/contact',
-                        data: this.contact
+                        url: 'http://localhost:8080/api/contacts',
+                        data: {
+                            zipcode: this.contact.cep,
+                            name: this.contact.name,
+                            email: this.contact.email
+                        }
                     }).then(() => {
                         this.success = true;
+                        this.sending = false;
+                        this.disabled = false;
                         this.erros = [];
+                        this.loadContacts();
                     },
-                    (error) => {
-                        this.erros = [error];
-                    });
+                        (error) => {
+                            this.erros = [error];
+
+                            this.sending = false;
+                            this.disabled = false;
+                        });
                 }
             },
         })
@@ -331,6 +343,82 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #header {
+            height: 50px;
+        }
+
+        #header .info {
+            float: right;
+            line-height: 50px;
+            padding-right: 20px;
+        }
+
+        #map {
+            height: calc(100vh - 60px);
+            width: 100%;
+            position: relative;
+        }
+
+        .row,
+        .col,
+        .col-4 {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .panel-left form {
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        .painel-left-itens {
+            height: calc(100vh - 190px);
+            display: block;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .customMarker {
+            position: absolute;
+            cursor: pointer;
+            background: #424242;
+            width: 55px;
+            height: 55px;
+            /* -height + arrow */
+            margin-left: -28px;
+            margin-top: -60px;
+            border-radius: 50%;
+            padding: 0px;
+        }
+
+        .customMarker:after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 18px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #424242 transparent;
+            display: block;
+            width: 0;
+        }
+
+        .customMarker img {
+            width: 50px;
+            height: 50px;
+            margin: 3px;
+            border-radius: 50%;
+        }
+    </style>
 </body>
 
 </html>
