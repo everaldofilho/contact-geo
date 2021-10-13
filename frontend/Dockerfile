@@ -8,4 +8,4 @@ WORKDIR /app
 
 COPY ./index.html /app/index-original.html
 
-RUN sed 's/8080/${BACKEND_PORT}/g' /app/index-original.html > /app/index.html
+RUN sed "s/8080/${BACKEND_PORT}/g" /app/index-original.html > /app/index.html
