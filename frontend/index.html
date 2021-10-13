@@ -46,10 +46,10 @@
                 <div class="col-4 panel-left">
                     <form>
 
-                        Registros por vês: {{config.pageSize}}
+                        {{config.pageSize}} Registros por vez 
                         <input type="range" v-model="config.pageSize" class="form-range">
 
-                        Raio: {{config.radius}}km
+                        Em uma distância de {{config.radius}}km
                         <input type="range" v-model="config.radius" class="form-range">
                     </form>
                     <div class="painel-left-itens">
